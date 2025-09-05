@@ -4,7 +4,15 @@
   "description": "A comprehensive work tracking application with task management, timers, reminders, and user authentication",
   "author": "Your Name",
   "license": "MIT",
-  "keywords": ["work-tracker", "task-management", "timer", "reminders", "productivity", "nextjs", "postgresql"],
+  "keywords": [
+    "work-tracker",
+    "task-management",
+    "timer",
+    "reminders",
+    "productivity",
+    "nextjs",
+    "postgresql"
+  ],
   "homepage": "https://github.com/yourusername/work-tracker",
   "repository": {
     "type": "git",
@@ -20,7 +28,8 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:migrate": "node lib/db/migrate.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
