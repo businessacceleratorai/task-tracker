@@ -181,3 +181,54 @@ Import traces:
  GET /api/tasks 200 in 368ms
  GET /api/timers 200 in 341ms
  GET /api/reminders 200 in 297ms
+ GET / 200 in 195ms
+ GET /api/auth/me 200 in 341ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 297ms
+ GET /api/tasks 200 in 295ms
+ GET /api/timers 200 in 306ms
+ GET /api/reminders 200 in 327ms
+ ○ Compiling /api/reminders/[id] ...
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 366ms
+ ✓ Compiled /api/reminders/[id] in 555ms
+Error: Route "/api/reminders/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at PUT (app/api/reminders/[id]/route.ts:19:40)
+  17 |     const result = await pool.query(
+  18 |       'UPDATE reminders SET next_trigger = $1, is_active = $2 WHERE id = $3 AND user_id = $4 RETURNING *',
+> 19 |       [next_trigger, is_active, params.id, user.userId]
+     |                                        ^
+  20 |     )
+  21 |     
+  22 |     if (result.rows.length === 0) {
+Error: Route "/api/reminders/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at PUT (app/api/reminders/[id]/route.ts:19:40)
+  17 |     const result = await pool.query(
+  18 |       'UPDATE reminders SET next_trigger = $1, is_active = $2 WHERE id = $3 AND user_id = $4 RETURNING *',
+> 19 |       [next_trigger, is_active, params.id, user.userId]
+     |                                        ^
+  20 |     )
+  21 |     
+  22 |     if (result.rows.length === 0) {
+ PUT /api/reminders/1 200 in 2966ms
+ PUT /api/reminders/1 200 in 2887ms
+ ✓ Compiled /api/clear-all in 413ms
+ DELETE /api/clear-all 200 in 752ms
+ GET / 200 in 1420ms
+ GET /api/auth/me 401 in 798ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 812ms
+ POST /api/auth/login 200 in 1438ms
+ GET /api/timers 200 in 541ms
+ GET /api/tasks 200 in 572ms
+ GET /api/reminders 200 in 565ms
+Error: Route "/api/tasks/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at DELETE (app/api/tasks/[id]/route.ts:46:15)
+  44 |     const result = await pool.query(
+  45 |       'DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING *',
+> 46 |       [params.id, user.userId]
+     |               ^
+  47 |     )
+  48 |     
+  49 |     if (result.rows.length === 0) {
+ DELETE /api/tasks/3 200 in 1387ms
+ POST /api/tasks 200 in 439ms
+ POST /api/tasks 200 in 408ms
+ POST /api/tasks 200 in 370ms

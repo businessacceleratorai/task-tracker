@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Trash2, Plus, Clock, Bell, Play, Pause, RotateCcw } from 'lucide-react'
+import { Trash2, Plus, Clock, Play, Pause, RotateCcw } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth/AuthContext'
 import AuthForm from '@/components/auth/AuthForm'
 import UserHeader from '@/components/auth/UserHeader'
@@ -134,7 +134,7 @@ function WorkTrackerContent() {
 
   const playNotificationSound = () => {
     // Create audio context and play a beep sound
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const audioContext = new (window.AudioContext || (window as Window & typeof globalThis & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)()
     const oscillator = audioContext.createOscillator()
     const gainNode = audioContext.createGain()
     

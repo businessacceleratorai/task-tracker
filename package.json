@@ -22,7 +22,7 @@
     "lint:fix": "eslint --fix",
     "type-check": "tsc --noEmit",
     "export": "next export",
-    "postbuild": "next-sitemap"
+    
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, User, Mail, Lock } from 'lucide-react'
 
 interface AuthFormProps {
-  onAuthSuccess: (user: any, token: string) => void
+  onAuthSuccess: (user: { id: number; email: string; name?: string; created_at: string }, token: string) => void
 }
 
 export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
