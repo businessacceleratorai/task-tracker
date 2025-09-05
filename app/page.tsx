@@ -8,6 +8,9 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Trash2, Plus, Clock, Bell, Play, Pause, RotateCcw } from 'lucide-react'
+import { AuthProvider, useAuth } from '@/lib/auth/AuthContext'
+import AuthForm from '@/components/auth/AuthForm'
+import UserHeader from '@/components/auth/UserHeader'
 
 interface Task {
   id: number
@@ -35,7 +38,8 @@ interface Reminder {
   is_active: boolean
 }
 
-export default function WorkTracker() {
+function WorkTrackerContent() {
+  const { user, token, isLoading, login } = useAuth()
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskText, setNewTaskText] = useState('')
   const [sortBy, setSortBy] = useState<'all' | 'date'>('all')
@@ -51,15 +55,19 @@ export default function WorkTracker() {
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const reminderIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Load data from database on mount
+  // Load data from database when user is authenticated
   useEffect(() => {
-    fetchTasks()
-    fetchTimers()
-    fetchReminders()
-  }, [])
+    if (user && token) {
+      fetchTasks()
+      fetchTimers()
+      fetchReminders()
+    }
+  }, [user, token])
 
   // Timer interval effect
   useEffect(() => {
+    if (!user) return
+
     timerIntervalRef.current = setInterval(() => {
       setTimers(prevTimers => 
         prevTimers.map(timer => {
@@ -86,10 +94,12 @@ export default function WorkTracker() {
         clearInterval(timerIntervalRef.current)
       }
     }
-  }, [])
+  }, [user])
 
   // Reminder interval effect
   useEffect(() => {
+    if (!user) return
+
     reminderIntervalRef.current = setInterval(() => {
       const now = new Date()
       setReminders(prevReminders => 
@@ -120,7 +130,7 @@ export default function WorkTracker() {
         clearInterval(reminderIntervalRef.current)
       }
     }
-  }, [])
+  }, [user])
 
   const playNotificationSound = () => {
     // Create audio context and play a beep sound
@@ -141,12 +151,22 @@ export default function WorkTracker() {
     oscillator.stop(audioContext.currentTime + 0.5)
   }
 
-  // API functions
+  // API functions with authentication headers
+  const getAuthHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  })
+
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/tasks')
-      const data = await response.json()
-      setTasks(data)
+      const response = await fetch('/api/tasks', {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setTasks(data)
+      }
     } catch (error) {
       console.error('Error fetching tasks:', error)
     }
@@ -154,9 +174,14 @@ export default function WorkTracker() {
 
   const fetchTimers = async () => {
     try {
-      const response = await fetch('/api/timers')
-      const data = await response.json()
-      setTimers(data)
+      const response = await fetch('/api/timers', {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setTimers(data)
+      }
     } catch (error) {
       console.error('Error fetching timers:', error)
     }
@@ -164,9 +189,14 @@ export default function WorkTracker() {
 
   const fetchReminders = async () => {
     try {
-      const response = await fetch('/api/reminders')
-      const data = await response.json()
-      setReminders(data)
+      const response = await fetch('/api/reminders', {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setReminders(data)
+      }
     } catch (error) {
       console.error('Error fetching reminders:', error)
     }
@@ -177,12 +207,15 @@ export default function WorkTracker() {
       try {
         const response = await fetch('/api/tasks', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
+          credentials: 'include',
           body: JSON.stringify({ text: newTaskText.trim() })
         })
-        const newTask = await response.json()
-        setTasks([newTask, ...tasks])
-        setNewTaskText('')
+        if (response.ok) {
+          const newTask = await response.json()
+          setTasks([newTask, ...tasks])
+          setNewTaskText('')
+        }
       } catch (error) {
         console.error('Error adding task:', error)
       }
@@ -193,11 +226,14 @@ export default function WorkTracker() {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify({ status: 'completed' })
       })
-      const updatedTask = await response.json()
-      setTasks(tasks.map(task => task.id === taskId ? updatedTask : task))
+      if (response.ok) {
+        const updatedTask = await response.json()
+        setTasks(tasks.map(task => task.id === taskId ? updatedTask : task))
+      }
     } catch (error) {
       console.error('Error completing task:', error)
     }
@@ -205,8 +241,14 @@ export default function WorkTracker() {
 
   const deleteTask = async (taskId: number) => {
     try {
-      await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' })
-      setTasks(tasks.filter(task => task.id !== taskId))
+      const response = await fetch(`/api/tasks/${taskId}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        setTasks(tasks.filter(task => task.id !== taskId))
+      }
     } catch (error) {
       console.error('Error deleting task:', error)
     }
@@ -214,10 +256,16 @@ export default function WorkTracker() {
 
   const clearAllData = async () => {
     try {
-      await fetch('/api/clear-all', { method: 'DELETE' })
-      setTasks([])
-      setTimers([])
-      setReminders([])
+      const response = await fetch('/api/clear-all', { 
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        setTasks([])
+        setTimers([])
+        setReminders([])
+      }
     } catch (error) {
       console.error('Error clearing all data:', error)
     }
@@ -229,13 +277,16 @@ export default function WorkTracker() {
       try {
         const response = await fetch('/api/timers', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
+          credentials: 'include',
           body: JSON.stringify({ name: newTimerName.trim(), duration, remaining: duration })
         })
-        const newTimer = await response.json()
-        setTimers([newTimer, ...timers])
-        setNewTimerName('')
-        setNewTimerDuration('')
+        if (response.ok) {
+          const newTimer = await response.json()
+          setTimers([newTimer, ...timers])
+          setNewTimerName('')
+          setNewTimerDuration('')
+        }
       } catch (error) {
         console.error('Error adding timer:', error)
       }
@@ -246,7 +297,8 @@ export default function WorkTracker() {
     try {
       await fetch(`/api/timers/${timerId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify(updates)
       })
     } catch (error) {
@@ -282,8 +334,14 @@ export default function WorkTracker() {
 
   const deleteTimer = async (timerId: number) => {
     try {
-      await fetch(`/api/timers/${timerId}`, { method: 'DELETE' })
-      setTimers(timers.filter(timer => timer.id !== timerId))
+      const response = await fetch(`/api/timers/${timerId}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        setTimers(timers.filter(timer => timer.id !== timerId))
+      }
     } catch (error) {
       console.error('Error deleting timer:', error)
     }
@@ -297,7 +355,8 @@ export default function WorkTracker() {
       try {
         const response = await fetch('/api/reminders', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: getAuthHeaders(),
+          credentials: 'include',
           body: JSON.stringify({ 
             name: newReminderName.trim(), 
             type: newReminderType, 
@@ -305,10 +364,12 @@ export default function WorkTracker() {
             next_trigger: nextTrigger 
           })
         })
-        const newReminder = await response.json()
-        setReminders([newReminder, ...reminders])
-        setNewReminderName('')
-        setNewReminderInterval('')
+        if (response.ok) {
+          const newReminder = await response.json()
+          setReminders([newReminder, ...reminders])
+          setNewReminderName('')
+          setNewReminderInterval('')
+        }
       } catch (error) {
         console.error('Error adding reminder:', error)
       }
@@ -319,7 +380,8 @@ export default function WorkTracker() {
     try {
       await fetch(`/api/reminders/${reminderId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify(updates)
       })
     } catch (error) {
@@ -341,8 +403,14 @@ export default function WorkTracker() {
 
   const deleteReminder = async (reminderId: number) => {
     try {
-      await fetch(`/api/reminders/${reminderId}`, { method: 'DELETE' })
-      setReminders(reminders.filter(reminder => reminder.id !== reminderId))
+      const response = await fetch(`/api/reminders/${reminderId}`, { 
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      })
+      if (response.ok) {
+        setReminders(reminders.filter(reminder => reminder.id !== reminderId))
+      }
     } catch (error) {
       console.error('Error deleting reminder:', error)
     }
@@ -359,14 +427,32 @@ export default function WorkTracker() {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
 
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Show auth form if not authenticated
+  if (!user) {
+    return <AuthForm onAuthSuccess={login} />
+  }
+
   const pendingTasks = tasks.filter(task => task.status === 'pending')
   const completedTasks = tasks.filter(task => task.status === 'completed')
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Work Tracker</h1>
+        <UserHeader />
+        
+        <div className="flex justify-end mb-6">
           <Button 
             variant="destructive" 
             onClick={clearAllData}
@@ -666,5 +752,13 @@ export default function WorkTracker() {
         </Tabs>
       </div>
     </div>
+  )
+}
+
+export default function WorkTracker() {
+  return (
+    <AuthProvider>
+      <WorkTrackerContent />
+    </AuthProvider>
   )
 }

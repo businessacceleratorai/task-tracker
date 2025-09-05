@@ -1,12 +1,18 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import pool from '@/lib/db/connection'
+import { getUserFromRequest } from '@/lib/auth/utils'
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
-    // Clear all data from all tables
-    await pool.query('DELETE FROM tasks')
-    await pool.query('DELETE FROM timers')
-    await pool.query('DELETE FROM reminders')
+    const user = getUserFromRequest(request)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Clear all data for the authenticated user only
+    await pool.query('DELETE FROM tasks WHERE user_id = $1', [user.userId])
+    await pool.query('DELETE FROM timers WHERE user_id = $1', [user.userId])
+    await pool.query('DELETE FROM reminders WHERE user_id = $1', [user.userId])
     
     return NextResponse.json({ message: 'All data cleared successfully' })
   } catch (error) {

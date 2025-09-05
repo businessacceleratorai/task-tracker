@@ -43,3 +43,141 @@ Error: Route "/api/tasks/[id]" used `params.id`. `params` should be awaited befo
  GET /api/tasks 200 in 364ms
  GET /api/timers 200 in 483ms
  GET /api/reminders 200 in 311ms
+ GET / 200 in 280ms
+ GET /api/tasks 200 in 324ms
+ GET /api/timers 200 in 288ms
+ GET /api/reminders 200 in 270ms
+ GET / 200 in 780ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 405ms
+ ✓ Compiled /api/auth/me in 371ms
+ GET /api/auth/me 401 in 749ms
+ GET / 200 in 207ms
+ GET /api/auth/me 401 in 295ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 287ms
+ ✓ Compiled /api/auth/register in 305ms
+ POST /api/auth/register 200 in 1303ms
+ ✓ Compiled in 302ms
+ ✓ Compiled in 348ms
+ ✓ Compiled in 336ms
+ ⨯ ./app/page.tsx:43:24
+Ecmascript file had an error
+[0m [90m 41 |[39m [36mfunction[39m [33mWorkTrackerContent[39m() {
+ [90m 42 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading[33m,[39m login } [33m=[39m useAuth()
+[31m[1m>[22m[39m[90m 43 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading } [33m=[39m useAuth()
+ [90m    |[39m                        [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 44 |[39m   [36mconst[39m [tasks[33m,[39m setTasks] [33m=[39m useState[33m<[39m[33mTask[39m[][33m>[39m([])
+ [90m 45 |[39m   [36mconst[39m [newTaskText[33m,[39m setNewTaskText] [33m=[39m useState([32m''[39m)
+ [90m 46 |[39m   [36mconst[39m [sortBy[33m,[39m setSortBy] [33m=[39m useState[33m<[39m[32m'all'[39m [33m|[39m [32m'date'[39m[33m>[39m([32m'all'[39m)[0m
+
+the name `isLoading` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+
+./app/page.tsx:43:17
+Ecmascript file had an error
+[0m [90m 41 |[39m [36mfunction[39m [33mWorkTrackerContent[39m() {
+ [90m 42 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading[33m,[39m login } [33m=[39m useAuth()
+[31m[1m>[22m[39m[90m 43 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading } [33m=[39m useAuth()
+ [90m    |[39m                 [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 44 |[39m   [36mconst[39m [tasks[33m,[39m setTasks] [33m=[39m useState[33m<[39m[33mTask[39m[][33m>[39m([])
+ [90m 45 |[39m   [36mconst[39m [newTaskText[33m,[39m setNewTaskText] [33m=[39m useState([32m''[39m)
+ [90m 46 |[39m   [36mconst[39m [sortBy[33m,[39m setSortBy] [33m=[39m useState[33m<[39m[32m'all'[39m [33m|[39m [32m'date'[39m[33m>[39m([32m'all'[39m)[0m
+
+the name `token` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+
+./app/page.tsx:43:11
+Ecmascript file had an error
+[0m [90m 41 |[39m [36mfunction[39m [33mWorkTrackerContent[39m() {
+ [90m 42 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading[33m,[39m login } [33m=[39m useAuth()
+[31m[1m>[22m[39m[90m 43 |[39m   [36mconst[39m { user[33m,[39m token[33m,[39m isLoading } [33m=[39m useAuth()
+ [90m    |[39m           [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 44 |[39m   [36mconst[39m [tasks[33m,[39m setTasks] [33m=[39m useState[33m<[39m[33mTask[39m[][33m>[39m([])
+ [90m 45 |[39m   [36mconst[39m [newTaskText[33m,[39m setNewTaskText] [33m=[39m useState([32m''[39m)
+ [90m 46 |[39m   [36mconst[39m [sortBy[33m,[39m setSortBy] [33m=[39m useState[33m<[39m[32m'all'[39m [33m|[39m [32m'date'[39m[33m>[39m([32m'all'[39m)[0m
+
+the name `user` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.7s
+ GET / 500 in 3219ms
+ GET /favicon.ico 500 in 116ms
+ ✓ Compiled in 338ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled / in 37ms
+ GET / 200 in 666ms
+ GET / 200 in 144ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 289ms
+ GET /api/auth/me 200 in 332ms
+ GET /api/tasks 200 in 435ms
+ GET /api/timers 200 in 331ms
+ GET /api/reminders 200 in 465ms
+ GET / 200 in 159ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 269ms
+ GET /api/auth/me 200 in 269ms
+ GET /api/tasks 200 in 307ms
+ GET /api/timers 200 in 299ms
+ GET /api/reminders 200 in 310ms
+ POST /api/tasks 200 in 319ms
+ POST /api/timers 200 in 296ms
+ ✓ Compiled /api/auth/logout in 202ms
+ POST /api/auth/logout 200 in 489ms
+ ✓ Compiled /api/auth/login in 237ms
+ POST /api/auth/login 200 in 1162ms
+ GET /api/tasks 200 in 287ms
+ GET /api/timers 200 in 273ms
+ GET /api/reminders 200 in 289ms
+ POST /api/reminders 200 in 313ms
+ GET / 200 in 178ms
+ GET /api/auth/me 401 in 283ms
+ POST /api/auth/register 200 in 880ms
+ GET /api/tasks 200 in 313ms
+ GET /api/timers 200 in 297ms
+ GET /api/reminders 200 in 308ms
+ POST /api/tasks 200 in 346ms
+ POST /api/auth/logout 200 in 312ms
+ POST /api/auth/register 200 in 913ms
+ GET /api/tasks 200 in 323ms
+ GET /api/timers 200 in 309ms
+ GET /api/reminders 200 in 303ms
+ POST /api/tasks 200 in 333ms
+ GET / 200 in 242ms
+ GET /api/auth/me 401 in 321ms
+ POST /api/auth/login 200 in 878ms
+ GET /api/tasks 200 in 335ms
+ GET /api/timers 200 in 348ms
+ GET /api/reminders 200 in 335ms
+ POST /api/auth/logout 200 in 308ms
+ POST /api/auth/login 200 in 941ms
+ GET /api/tasks 200 in 368ms
+ GET /api/timers 200 in 341ms
+ GET /api/reminders 200 in 297ms
