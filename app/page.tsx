@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Trash2, Plus, Clock, Play, Pause, RotateCcw } from 'lucide-react'
 import { AuthProvider, useAuth } from '@/lib/auth/AuthContext'
+import { NotesPage } from "@/components/notes/NotesPage"
 import AuthForm from '@/components/auth/AuthForm'
 import UserHeader from '@/components/auth/UserHeader'
 
@@ -464,10 +465,11 @@ function WorkTrackerContent() {
         </div>
 
         <Tabs defaultValue="tasks" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="timers">Timers</TabsTrigger>
             <TabsTrigger value="reminders">Reminders</TabsTrigger>
+            <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
 
           <TabsContent value="tasks" className="space-y-4">
@@ -612,7 +614,7 @@ function WorkTrackerContent() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {timers.map(timer => (
                 <Card key={timer.id} className={timer.is_completed ? 'border-green-500' : ''}>
                   <CardHeader>
@@ -748,6 +750,10 @@ function WorkTrackerContent() {
             {reminders.length === 0 && (
               <p className="text-gray-500 text-center py-8">No reminders created</p>
             )}
+          </TabsContent>
+
+          <TabsContent value="notes" className="h-full">
+            <NotesPage />
           </TabsContent>
         </Tabs>
       </div>
