@@ -184,7 +184,7 @@ export function ReminderList({ reminders, setReminders, onRefresh }: ReminderLis
               <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <p className="text-muted-foreground">No reminders yet</p>
               <p className="text-sm text-muted-foreground">
-                Click "Add Reminder" to create your first reminder
+                Click &quot;Add Reminder&quot; to create your first reminder
               </p>
             </CardContent>
           </Card>
