@@ -1,0 +1,45 @@
+$ next dev --turbopack
+   ▲ Next.js 15.5.2 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://169.254.0.21:3000
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+ ✓ Ready in 1953ms
+ ○ Compiling / ...
+ ✓ Compiled / in 6.9s
+ GET / 200 in 7855ms
+ GET / 200 in 227ms
+ ⚠ Cross origin request detected from work-tracker-2.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 602ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 998ms
+ GET / 200 in 422ms
+ ○ Compiling /api/tasks ...
+ ✓ Compiled /api/tasks in 765ms
+ GET /api/reminders 200 in 1240ms
+ GET /api/tasks 200 in 1253ms
+ GET /api/timers 200 in 1240ms
+ POST /api/tasks 200 in 328ms
+ ✓ Compiled /api/tasks/[id] in 242ms
+Error: Route "/api/tasks/[id]" used `params.id`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at PUT (app/api/tasks/[id]/route.ts:14:36)
+  12 |     const result = await pool.query(
+  13 |       'UPDATE tasks SET status = $1, completed_at = $2 WHERE id = $3 RETURNING *',
+> 14 |       [status, completedAt, params.id]
+     |                                    ^
+  15 |     )
+  16 |     
+  17 |     if (result.rows.length === 0) {
+ PUT /api/tasks/1 200 in 1895ms
+ POST /api/timers 200 in 315ms
+ GET / 200 in 262ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 439ms
+ GET /api/tasks 200 in 364ms
+ GET /api/timers 200 in 483ms
+ GET /api/reminders 200 in 311ms
