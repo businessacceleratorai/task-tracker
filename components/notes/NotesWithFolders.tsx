@@ -41,6 +41,7 @@ interface NotesWithFoldersProps {
   onRenameFolder: (folderId: number, newName: string) => void;
   onDeleteFolder: (folderId: number) => void;
   onDeleteNote: (noteId: number) => void;
+  onMoveNote: (noteId: number, folderId: number) => void;
 }
 
 export function NotesWithFolders({
@@ -54,7 +55,8 @@ export function NotesWithFolders({
   onNewFolder,
   onRenameFolder,
   onDeleteFolder,
-  onDeleteNote
+  onDeleteNote,
+  onMoveNote
 }: NotesWithFoldersProps) {
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
 
@@ -125,7 +127,7 @@ export function NotesWithFolders({
               onClick={() => onNewNote()}
               size="sm"
               className="h-8 w-8 p-0"
-              title="New Note"
+              title="New Note (in General folder)"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -160,6 +162,7 @@ export function NotesWithFolders({
                 <FolderItem
                   key={folder.id}
                   folder={folder}
+                  folders={folders}
                   notes={filteredNotes}
                   isExpanded={expandedFolders.has(folder.id)}
                   selectedNoteId={selectedNoteId}
@@ -168,6 +171,8 @@ export function NotesWithFolders({
                   onRenameFolder={onRenameFolder}
                   onDeleteFolder={onDeleteFolder}
                   onDeleteNote={onDeleteNote}
+                  onNewNote={onNewNote}
+                  onMoveNote={onMoveNote}
                   getPreview={getPreview}
                 />
               ))}

@@ -181,6 +181,42 @@ export function NotesPage() {
     }
   };
 
+  // Move note to different folder
+  const handleMoveNote = async (noteId: number, folderId: number) => {
+    try {
+      const response = await fetch(`/api/notes/${noteId}/move`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ folderId }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const updatedNote = data;
+        
+        setNotes(prev => prev.map(note => 
+          note.id === noteId ? { ...note, folder_id: folderId } : note
+        ));
+        
+        // Update selected note if it's the one being moved
+        if (selectedNote?.id === noteId) {
+          setSelectedNote(prev => prev ? { ...prev, folder_id: folderId } : null);
+        }
+        
+        const targetFolder = folders.find(f => f.id === folderId);
+        toast.success(`Note moved to ${targetFolder?.name || 'folder'}`);
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to move note');
+      }
+    } catch (error) {
+      console.error('Error moving note:', error);
+      toast.error('Failed to move note');
+    }
+  };
+
   // Save note (create or update)
   const handleSaveNote = async (noteId: number | null, title: string, content: string) => {
     try {
@@ -275,6 +311,7 @@ export function NotesPage() {
         onRenameFolder={handleRenameFolder}
         onDeleteFolder={handleDeleteFolder}
         onDeleteNote={handleDeleteNote}
+        onMoveNote={handleMoveNote}
       />
       
       <NotesEditor

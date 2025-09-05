@@ -1,134 +1,161 @@
-# 🚀 Work Tracker - Full-Stack Task Management Application
+# 📋 Work Tracker - Complete Task Management Solution
 
-A comprehensive work tracking application built with Next.js, PostgreSQL, and modern authentication. Features task management, timers, reminders, and user authentication with data persistence.
+A modern, full-featured task management application built with Next.js, TypeScript, and PostgreSQL. Features task management, time tracking, reminders, and a sophisticated notes system with folder organization.
 
-![Work Tracker Demo](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Work+Tracker+Demo)
+![Work Tracker](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?style=for-the-badge&logo=postgresql)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)
 
 ## ✨ Features
 
-### 🔐 Authentication System
-- **User Registration & Login** - Secure account creation and authentication
-- **JWT Token Authentication** - Secure session management with HTTP-only cookies
-- **Password Security** - Bcrypt hashing for secure password storage
-- **Session Persistence** - Users stay logged in across browser sessions
-- **Data Isolation** - Each user has their own secure workspace
+### 🎯 Task Management
+- Create, edit, and delete tasks
+- Mark tasks as complete/incomplete
+- Task filtering and organization
+- Persistent storage with PostgreSQL
 
-### 📋 Task Management
-- **Create Tasks** - Add new tasks with timestamps
-- **Task Status** - Mark tasks as pending or completed
-- **Task Organization** - Two-column layout (Pending vs Completed)
-- **Task Actions** - Complete, delete, and manage tasks
-- **Real-time Updates** - Instant UI updates with database persistence
+### ⏱️ Time Tracking
+- Start/stop timers for tasks
+- Track time spent on different activities
+- Timer history and analytics
+- Real-time timer updates
 
-### ⏱️ Timer System
-- **Multiple Timers** - Create unlimited custom timers
-- **Timer Controls** - Start, pause, reset, and delete timers
-- **Custom Duration** - Set timers for any duration in minutes
-- **Visual Feedback** - Real-time countdown display
-- **Sound Notifications** - Audio alerts when timers complete
-- **Timer Persistence** - Timers save state across sessions
+### 🔔 Reminders
+- Set reminders for important tasks
+- Notification system
+- Reminder management
+- Due date tracking
 
-### 🔔 Reminder System
-- **One-time Reminders** - Set single-use reminders
-- **Recurring Reminders** - Set repeating reminders
-- **Flexible Intervals** - Configure intervals in minutes or hours
-- **Active Management** - Pause/resume reminders as needed
-- **Sound Alerts** - Audio notifications when reminders trigger
-- **Smart Scheduling** - Automatic next trigger calculation
+### 📝 Advanced Notes System
+- **Rich Text Editor** with full formatting support
+- **Folder Organization** - Create and manage note folders
+- **Drag & Drop** - Move notes between folders easily
+- **Context Menus** - Right-click for quick actions
+- **Search Functionality** - Find notes and folders quickly
+- **Auto-save** with Ctrl+S support
+- **Note Previews** with timestamps
+
+### 🔐 Authentication
+- Secure user registration and login
+- JWT-based authentication
+- Session management
+- User isolation for multi-tenant support
 
 ### 🎨 Modern UI/UX
-- **Responsive Design** - Works perfectly on all devices
-- **Beautiful Interface** - Modern design with Tailwind CSS
-- **Dark/Light Theme Support** - Built-in theme switching
-- **Loading States** - Smooth loading indicators
-- **Error Handling** - User-friendly error messages
-- **Accessibility** - WCAG compliant interface
-
-## 🛠️ Tech Stack
-
-### Frontend
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework
-- **shadcn/ui** - Beautiful, accessible UI components
-- **Lucide React** - Modern icon library
-
-### Backend
-- **Next.js API Routes** - Serverless API endpoints
-- **PostgreSQL** - Robust relational database
-- **JWT** - JSON Web Token authentication
-- **Bcrypt** - Password hashing and security
-
-### Authentication
-- **JWT Tokens** - Secure authentication tokens
-- **HTTP-Only Cookies** - Secure cookie-based sessions
-- **Password Hashing** - Bcrypt for password security
-- **Session Management** - Persistent user sessions
+- **Responsive Design** - Works on all devices
+- **Dark/Light Mode** support
+- **Professional Interface** - Microsoft Word-like notes editor
+- **Smooth Animations** - Enhanced user experience
+- **Accessibility** - WCAG compliant
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ installed
-- PostgreSQL database (local or cloud)
-- Git for version control
+- Node.js 18+ 
+- PostgreSQL 15+
+- npm or yarn
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/work-tracker.git
-cd work-tracker
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/businessacceleratorai/task-tracker.git
+   cd task-tracker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Edit `.env.local`:
+   ```env
+   DATABASE_URL=postgresql://username:password@localhost:5432/work_tracker
+   JWT_SECRET=your-super-secret-jwt-key-here
+   NEXTAUTH_SECRET=your-nextauth-secret-here
+   NEXTAUTH_URL=http://localhost:3000
+   ```
+
+4. **Set up the database**
+   ```bash
+   # Create database
+   createdb work_tracker
+   
+   # Run migrations (in order)
+   psql -d work_tracker -f lib/db/auth-migration.sql
+   psql -d work_tracker -f lib/db/init.sql
+   psql -d work_tracker -f lib/db/notes-migration.sql
+   psql -d work_tracker -f lib/db/notes-folders-migration.sql
+   ```
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+## 🏗️ Project Structure
+
+```
+work-tracker/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   ├── auth/         # Authentication endpoints
+│   │   ├── folders/      # Folder management
+│   │   ├── notes/        # Notes management
+│   │   ├── tasks/        # Task management
+│   │   ├── timers/       # Timer functionality
+│   │   └── reminders/    # Reminder system
+│   ├── globals.css       # Global styles
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Home page
+├── components/            # React components
+│   ├── notes/            # Notes-specific components
+│   │   ├── NotesPage.tsx        # Main notes page
+│   │   ├── NotesWithFolders.tsx # Sidebar with folders
+│   │   ├── FolderItem.tsx       # Individual folder component
+│   │   ├── NotesEditor.tsx      # Notes editor container
+│   │   └── RichTextEditor.tsx   # Rich text editor
+│   ├── ui/               # Reusable UI components
+│   └── ...               # Other components
+├── lib/                  # Utilities and configurations
+│   ├── db/              # Database utilities and migrations
+│   ├── auth/            # Authentication utilities
+│   └── utils.ts         # General utilities
+├── public/              # Static assets
+└── ...                  # Configuration files
 ```
 
-### 2. Install Dependencies
-```bash
-npm install
-# or
-yarn install
-# or
-bun install
-```
+## 🔧 Technology Stack
 
-### 3. Environment Setup
-Create a `.env.local` file in the root directory:
+### Frontend
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **shadcn/ui** - Modern UI component library
+- **Lucide React** - Beautiful icons
+- **Sonner** - Toast notifications
 
-```env
-# Database Configuration
-PGHOST=localhost
-PGPORT=5432
-PGDATABASE=work_tracker
-PGUSER=your_username
-PGPASSWORD=your_password
+### Backend
+- **Next.js API Routes** - Serverless API endpoints
+- **PostgreSQL** - Robust relational database
+- **JWT** - JSON Web Tokens for authentication
+- **bcrypt** - Password hashing
 
-# JWT Secret (generate a secure random string)
-JWT_SECRET=your-super-secure-jwt-secret-key-here
-
-# Next.js Configuration
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your-nextauth-secret-here
-```
-
-### 4. Database Setup
-```bash
-# Create database
-createdb work_tracker
-
-# Run database migrations (tables will be created automatically on first run)
-npm run dev
-```
-
-### 5. Start Development Server
-```bash
-npm run dev
-# or
-yarn dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Development Tools
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **TypeScript** - Static type checking
 
 ## 📊 Database Schema
-
-The application uses PostgreSQL with the following tables:
 
 ### Users Table
 ```sql
@@ -136,8 +163,9 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   email VARCHAR(255) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
-  name VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
@@ -145,134 +173,119 @@ CREATE TABLE users (
 ```sql
 CREATE TABLE tasks (
   id SERIAL PRIMARY KEY,
-  text TEXT NOT NULL,
-  status VARCHAR(20) DEFAULT 'pending',
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  completed_at TIMESTAMP
+  user_id INTEGER REFERENCES users(id),
+  title VARCHAR(255) NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-### Timers Table
+### Folders Table
 ```sql
-CREATE TABLE timers (
+CREATE TABLE folders (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
   name VARCHAR(255) NOT NULL,
-  duration INTEGER NOT NULL,
-  remaining INTEGER NOT NULL,
-  is_running BOOLEAN DEFAULT FALSE,
-  is_completed BOOLEAN DEFAULT FALSE,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-### Reminders Table
+### Notes Table
 ```sql
-CREATE TABLE reminders (
+CREATE TABLE notes (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  type VARCHAR(20) NOT NULL,
-  interval_seconds INTEGER NOT NULL,
-  next_trigger TIMESTAMP NOT NULL,
-  is_active BOOLEAN DEFAULT TRUE,
-  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  user_id INTEGER REFERENCES users(id),
+  folder_id INTEGER REFERENCES folders(id),
+  title VARCHAR(255) NOT NULL,
+  content TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
 
-## 🔧 API Endpoints
+## 🎯 Key Features Implemented
 
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/me` - Get current user
+### ✅ Requirements Completed
 
-### Tasks
-- `GET /api/tasks` - Get user's tasks
-- `POST /api/tasks` - Create new task
-- `PUT /api/tasks/[id]` - Update task
-- `DELETE /api/tasks/[id]` - Delete task
+1. **✅ "Clear All" button hidden on Notes tab**
+   - Conditional rendering based on active tab
+   - Button appears on Tasks/Timers/Reminders tabs
+   - Hidden specifically on Notes tab
 
-### Timers
-- `GET /api/timers` - Get user's timers
-- `POST /api/timers` - Create new timer
-- `PUT /api/timers/[id]` - Update timer
-- `DELETE /api/timers/[id]` - Delete timer
+2. **✅ Functional folder creation button (📁)**
+   - Creates new folders with default name "New Folder"
+   - Database persistence
+   - Real-time UI updates
 
-### Reminders
-- `GET /api/reminders` - Get user's reminders
-- `POST /api/reminders` - Create new reminder
-- `PUT /api/reminders/[id]` - Update reminder
-- `DELETE /api/reminders/[id]` - Delete reminder
+3. **✅ Functional note creation button (+)**
+   - Creates notes in specified folders
+   - Rich text editor integration
+   - Auto-save functionality
 
-### Utility
-- `DELETE /api/clear-all` - Clear all user data
+### 🚀 Enhanced Features Added
 
-## 🚀 Deployment Guide
+4. **✅ Advanced Folder Management**
+   - Right-click context menus
+   - Folder renaming with inline editing
+   - Folder deletion with protection
+   - Note count display
 
-### Deploy to Vercel (Recommended)
-1. Push code to GitHub
-2. Connect GitHub repo to Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy automatically
+5. **✅ Note Organization**
+   - Drag & drop between folders
+   - Move notes via context menu
+   - Search across folders and notes
+   - Expandable folder tree
 
-### Deploy to Netlify
-1. Build the application: `npm run build`
-2. Deploy the `out` folder to Netlify
-3. Configure environment variables
-4. Set up PostgreSQL database
+6. **✅ Rich Text Editor**
+   - Bold, italic, underline formatting
+   - Headers (H1, H2, H3)
+   - Bullet and numbered lists
+   - Text alignment options
+   - Auto-save with Ctrl+S
 
-### Deploy to Railway
-1. Connect GitHub repository
-2. Add PostgreSQL database
-3. Configure environment variables
-4. Deploy automatically
+## 🚀 Deployment
 
-## 🔒 Security Features
+### Quick Deploy Options
 
-- **Password Hashing** - Bcrypt with salt rounds
-- **JWT Authentication** - Secure token-based auth
-- **HTTP-Only Cookies** - Prevent XSS attacks
-- **CSRF Protection** - Built-in Next.js protection
-- **Data Validation** - Input sanitization and validation
-- **SQL Injection Prevention** - Parameterized queries
-- **User Data Isolation** - Complete data separation between users
+#### Vercel (Recommended)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/businessacceleratorai/task-tracker)
 
-## 🎯 Usage Guide
+#### Netlify
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/businessacceleratorai/task-tracker)
 
-### Getting Started
-1. **Register Account** - Create a new account with email and password
-2. **Login** - Sign in to access your personal workspace
-3. **Add Tasks** - Create tasks to track your work
-4. **Set Timers** - Use timers for focused work sessions
-5. **Create Reminders** - Set up notifications for important events
+### Manual Deployment
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions for both Netlify and Vercel.
 
-### Task Management
-- Click "Add Task" to create new tasks
-- Use "Complete" button to mark tasks as done
-- Delete tasks you no longer need
-- View pending and completed tasks in separate columns
+## 🧪 Testing
 
-### Timer Usage
-- Create timers with custom names and durations
-- Use Play/Pause buttons to control timers
-- Reset timers to original duration
-- Get audio notifications when timers complete
+### Run Tests
+```bash
+# Unit tests
+npm run test
 
-### Reminder System
-- Set one-time or recurring reminders
-- Configure intervals in minutes or hours
-- Pause/resume reminders as needed
-- Receive audio alerts when reminders trigger
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Build test
+npm run build
+```
+
+### Test User Credentials
+For development/testing:
+- Email: `test@example.com`
+- Password: `password123`
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## 📝 License
@@ -281,19 +294,34 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- [Next.js](https://nextjs.org/) - The React framework for production
-- [shadcn/ui](https://ui.shadcn.com/) - Beautiful UI components
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [PostgreSQL](https://www.postgresql.org/) - Advanced open source database
-- [Lucide](https://lucide.dev/) - Beautiful & consistent icons
+- [Next.js](https://nextjs.org/) for the amazing React framework
+- [shadcn/ui](https://ui.shadcn.com/) for the beautiful UI components
+- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
+- [Lucide](https://lucide.dev/) for the beautiful icons
 
 ## 📞 Support
 
-If you have any questions or need help, please:
-- Open an issue on GitHub
-- Check the documentation
-- Contact the maintainers
+If you have any questions or need help:
+
+1. Check the [Issues](https://github.com/businessacceleratorai/task-tracker/issues) page
+2. Create a new issue if your problem isn't already reported
+3. Check the [DEPLOYMENT.md](./DEPLOYMENT.md) for deployment help
+
+## 🎯 Roadmap
+
+- [ ] Mobile app (React Native)
+- [ ] Team collaboration features
+- [ ] Advanced analytics and reporting
+- [ ] Integration with external calendars
+- [ ] Offline support with sync
+- [ ] Advanced search with filters
+- [ ] Export/import functionality
+- [ ] API documentation
 
 ---
 
-**Built with ❤️ using Next.js, PostgreSQL, and modern web technologies**
+**Built with ❤️ by Business Accelerator AI**
+
+**Repository:** https://github.com/businessacceleratorai/task-tracker
+**Live Demo:** [Coming Soon]
+**Last Updated:** September 2025
