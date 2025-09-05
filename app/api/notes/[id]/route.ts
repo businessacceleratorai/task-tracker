@@ -34,15 +34,19 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
-    const noteId = parseInt(id);
+    const resolvedParams = await params;
+    const noteId = parseInt(resolvedParams.id);
 
     if (isNaN(noteId)) {
       return NextResponse.json({ error: 'Invalid note ID' }, { status: 400 });
     }
 
     const result = await pool.query(
-      'SELECT id, title, content, created_at, updated_at FROM notes WHERE id = $1 AND user_id = $2',
+      `SELECT n.id, n.title, n.content, n.folder_id, n.created_at, n.updated_at,
+              f.name as folder_name
+       FROM notes n
+       LEFT JOIN folders f ON n.folder_id = f.id
+       WHERE n.id = $1 AND n.user_id = $2`,
       [noteId, user.userId]
     );
 
@@ -68,23 +72,35 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
-    const noteId = parseInt(id);
+    const resolvedParams = await params;
+    const noteId = parseInt(resolvedParams.id);
 
     if (isNaN(noteId)) {
       return NextResponse.json({ error: 'Invalid note ID' }, { status: 400 });
     }
 
-    const { title, content } = await request.json();
+    const { title, content, folderId } = await request.json();
 
     if (!title?.trim()) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
-    const result = await pool.query(
-      'UPDATE notes SET title = $1, content = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 AND user_id = $4 RETURNING id, title, content, created_at, updated_at',
-      [title.trim(), content || '', noteId, user.userId]
-    );
+    let query = 'UPDATE notes SET title = $1, content = $2, updated_at = CURRENT_TIMESTAMP';
+    const queryParams = [title.trim(), content || ''];
+    
+    if (folderId !== undefined) {
+      query += ', folder_id = $3';
+      queryParams.push(folderId);
+      query += ' WHERE id = $4 AND user_id = $5';
+      queryParams.push(noteId, user.userId);
+    } else {
+      query += ' WHERE id = $3 AND user_id = $4';
+      queryParams.push(noteId, user.userId);
+    }
+    
+    query += ' RETURNING id, title, content, folder_id, created_at, updated_at';
+
+    const result = await pool.query(query, queryParams);
 
     if (result.rows.length === 0) {
       return NextResponse.json({ error: 'Note not found' }, { status: 404 });
@@ -108,8 +124,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = await params;
-    const noteId = parseInt(id);
+    const resolvedParams = await params;
+    const noteId = parseInt(resolvedParams.id);
 
     if (isNaN(noteId)) {
       return NextResponse.json({ error: 'Invalid note ID' }, { status: 400 });

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { NotesSidebar } from './NotesSidebar';
+import { NotesWithFolders } from './NotesWithFolders';
 import { NotesEditor } from './NotesEditor';
 import { toast } from 'sonner';
 
@@ -9,15 +9,40 @@ interface Note {
   id: number;
   title: string;
   content: string;
+  folder_id: number;
+  folder_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface Folder {
+  id: number;
+  name: string;
   created_at: string;
   updated_at: string;
 }
 
 export function NotesPage() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch folders
+  const fetchFolders = async () => {
+    try {
+      const response = await fetch('/api/folders');
+      if (response.ok) {
+        const data = await response.json();
+        setFolders(data.folders);
+      } else {
+        console.error('Failed to fetch folders');
+      }
+    } catch (error) {
+      console.error('Error fetching folders:', error);
+    }
+  };
 
   // Fetch notes
   const fetchNotes = async () => {
@@ -37,12 +62,98 @@ export function NotesPage() {
   };
 
   useEffect(() => {
+    fetchFolders();
     fetchNotes();
   }, []);
 
-  // Create new note
-  const handleNewNote = async () => {
+  // Create new folder
+  const handleNewFolder = async () => {
     try {
+      const response = await fetch('/api/folders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: 'New Folder'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const newFolder = data.folder;
+        setFolders(prev => [...prev, newFolder]);
+        toast.success('New folder created');
+      } else {
+        toast.error('Failed to create folder');
+      }
+    } catch (error) {
+      console.error('Error creating folder:', error);
+      toast.error('Failed to create folder');
+    }
+  };
+
+  // Rename folder
+  const handleRenameFolder = async (folderId: number, newName: string) => {
+    try {
+      const response = await fetch(`/api/folders/${folderId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: newName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const updatedFolder = data.folder;
+        
+        setFolders(prev => prev.map(folder => 
+          folder.id === folderId ? updatedFolder : folder
+        ));
+        toast.success('Folder renamed');
+      } else {
+        toast.error('Failed to rename folder');
+      }
+    } catch (error) {
+      console.error('Error renaming folder:', error);
+      toast.error('Failed to rename folder');
+    }
+  };
+
+  // Delete folder
+  const handleDeleteFolder = async (folderId: number) => {
+    if (!confirm('Are you sure you want to delete this folder? It must be empty.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/folders/${folderId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setFolders(prev => prev.filter(folder => folder.id !== folderId));
+        toast.success('Folder deleted');
+      } else {
+        const data = await response.json();
+        toast.error(data.error || 'Failed to delete folder');
+      }
+    } catch (error) {
+      console.error('Error deleting folder:', error);
+      toast.error('Failed to delete folder');
+    }
+  };
+
+  // Create new note
+  const handleNewNote = async (folderId?: number) => {
+    try {
+      // If no folderId provided, use the first folder or create a default one
+      let targetFolderId = folderId;
+      if (!targetFolderId && folders.length > 0) {
+        targetFolderId = folders[0].id;
+      }
+
       const response = await fetch('/api/notes', {
         method: 'POST',
         headers: {
@@ -50,7 +161,8 @@ export function NotesPage() {
         },
         body: JSON.stringify({
           title: 'Untitled Note',
-          content: ''
+          content: '',
+          folderId: targetFolderId
         }),
       });
 
@@ -151,13 +263,17 @@ export function NotesPage() {
 
   return (
     <div className="flex h-full bg-background">
-      <NotesSidebar
+      <NotesWithFolders
         notes={notes}
+        folders={folders}
         selectedNoteId={selectedNote?.id || null}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onNoteSelect={handleNoteSelect}
         onNewNote={handleNewNote}
+        onNewFolder={handleNewFolder}
+        onRenameFolder={handleRenameFolder}
+        onDeleteFolder={handleDeleteFolder}
         onDeleteNote={handleDeleteNote}
       />
       

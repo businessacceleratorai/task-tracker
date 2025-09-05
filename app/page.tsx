@@ -42,6 +42,7 @@ interface Reminder {
 function WorkTrackerContent() {
   const { user, token, isLoading, login } = useAuth()
   const [tasks, setTasks] = useState<Task[]>([])
+  const [currentTab, setCurrentTab] = useState("tasks")
   const [newTaskText, setNewTaskText] = useState('')
   const [sortBy, setSortBy] = useState<'all' | 'date'>('all')
   const [timers, setTimers] = useState<Timer[]>([])
@@ -453,18 +454,20 @@ function WorkTrackerContent() {
       <div className="max-w-7xl mx-auto">
         <UserHeader />
         
-        <div className="flex justify-end mb-6">
-          <Button 
-            variant="destructive" 
-            onClick={clearAllData}
-            className="bg-red-500 hover:bg-red-600"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Clear All
-          </Button>
-        </div>
+        {currentTab !== "notes" && (
+          <div className="flex justify-end mb-6">
+            <Button 
+              variant="destructive" 
+              onClick={clearAllData}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Clear All
+            </Button>
+          </div>
+        )}
 
-        <Tabs defaultValue="tasks" className="w-full">
+        <Tabs defaultValue="tasks" className="w-full" onValueChange={setCurrentTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="timers">Timers</TabsTrigger>
