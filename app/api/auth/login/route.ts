@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { memoryStore } from '@/lib/db/memory-store'
-import { verifyPassword, generateToken } from '@/lib/auth/utils'
+import { verifyPassword, generateToken } from '@/lib/auth/simple-utils'
 
 export async function POST(request: NextRequest) {
   try {
