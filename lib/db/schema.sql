@@ -1,76 +1,73 @@
 -- Work Tracker Database Schema
 
--- Create users table
+-- Users table
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
     name VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create folders table
-CREATE TABLE IF NOT EXISTS folders (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create notes table
-CREATE TABLE IF NOT EXISTS notes (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL DEFAULT 'Untitled Note',
-    content TEXT,
-    folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create tasks table
+-- Tasks table
 CREATE TABLE IF NOT EXISTS tasks (
     id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    completed BOOLEAN DEFAULT FALSE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    status VARCHAR(50) DEFAULT 'pending',
+    priority VARCHAR(20) DEFAULT 'medium',
+    due_date TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create timers table
-CREATE TABLE IF NOT EXISTS timers (
+-- Time entries table
+CREATE TABLE IF NOT EXISTS time_entries (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    duration INTEGER DEFAULT 0,
-    is_running BOOLEAN DEFAULT FALSE,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_time TIMESTAMP WITH TIME ZONE,
+    duration INTEGER, -- in seconds
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create reminders table
+-- Reminders table
 CREATE TABLE IF NOT EXISTS reminders (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    reminder_time TIMESTAMP NOT NULL,
-    completed BOOLEAN DEFAULT FALSE,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    task_id INTEGER REFERENCES tasks(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT,
+    remind_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    is_sent BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
-CREATE INDEX IF NOT EXISTS idx_notes_folder_id ON notes(folder_id);
-CREATE INDEX IF NOT EXISTS idx_folders_user_id ON folders(user_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
-CREATE INDEX IF NOT EXISTS idx_timers_user_id ON timers(user_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_time_entries_user_id ON time_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_time_entries_task_id ON time_entries(task_id);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_id ON reminders(user_id);
+CREATE INDEX IF NOT EXISTS idx_reminders_remind_at ON reminders(remind_at);
 
--- Insert default data (optional)
--- This will create a default "General" folder for each user when they register
+-- Update updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers for updated_at
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_tasks_updated_at ON tasks;
+CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

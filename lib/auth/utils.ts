@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-secret-key'
 
 export interface User {
   id: number
@@ -13,53 +13,66 @@ export interface User {
 export interface JWTPayload {
   userId: number
   email: string
+  iat?: number
+  exp?: number
 }
 
+// Hash password
 export async function hashPassword(password: string): Promise<string> {
   const saltRounds = 12
-  return bcrypt.hash(password, saltRounds)
+  return await bcrypt.hash(password, saltRounds)
 }
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash)
+// Verify password
+export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword)
 }
 
-export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+// Generate JWT token
+export function generateToken(user: User): string {
+  const payload: JWTPayload = {
+    userId: user.id,
+    email: user.email
+  }
+  
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: '7d' // Token expires in 7 days
+  })
 }
 
+// Verify JWT token
 export function verifyToken(token: string): JWTPayload | null {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload
-  } catch {
+  } catch (error) {
+    console.error('Token verification failed:', error)
     return null
   }
 }
 
-export function extractTokenFromRequest(request: Request): string | null {
-  const authHeader = request.headers.get('authorization')
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.substring(7)
+// Extract token from Authorization header
+export function extractTokenFromHeader(authHeader: string | null): string | null {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null
   }
-  
-  // Also check cookies for browser-based auth
-  const cookieHeader = request.headers.get('cookie')
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-      const [key, value] = cookie.trim().split('=')
-      acc[key] = value
-      return acc
-    }, {} as Record<string, string>)
-    
-    return cookies.auth_token || null
-  }
-  
-  return null
+  return authHeader.substring(7) // Remove 'Bearer ' prefix
 }
 
-export function getUserFromRequest(request: Request): JWTPayload | null {
-  const token = extractTokenFromRequest(request)
-  if (!token) return null
+// Validate email format
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Validate password strength
+export function isValidPassword(password: string): { valid: boolean; message?: string } {
+  if (password.length < 6) {
+    return { valid: false, message: 'Password must be at least 6 characters long' }
+  }
   
-  return verifyToken(token)
+  if (password.length > 128) {
+    return { valid: false, message: 'Password must be less than 128 characters long' }
+  }
+  
+  return { valid: true }
 }
