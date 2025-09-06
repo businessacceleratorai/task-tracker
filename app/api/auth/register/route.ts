@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import pool from '@/lib/db/connection'
+import db from '@/lib/db/sqlite-connection'
 import { hashPassword, generateToken } from '@/lib/auth/utils'
 
 export async function POST(request: NextRequest) {
@@ -22,12 +22,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email.toLowerCase()]
-    )
+    const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase())
 
-    if (existingUser.rows.length > 0) {
+    if (existingUser) {
       return NextResponse.json(
         { error: 'User with this email already exists' },
         { status: 409 }
@@ -36,12 +33,16 @@ export async function POST(request: NextRequest) {
 
     // Hash password and create user
     const passwordHash = await hashPassword(password)
-    const result = await pool.query(
-      'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
-      [email.toLowerCase(), passwordHash, name || null]
-    )
+    const insertUser = db.prepare(`
+      INSERT INTO users (email, password_hash, name) 
+      VALUES (?, ?, ?) 
+    `)
+    
+    const result = insertUser.run(email.toLowerCase(), passwordHash, name || null)
+    const userId = result.lastInsertRowid
 
-    const user = result.rows[0]
+    // Get the created user
+    const user = db.prepare('SELECT id, email, name, created_at FROM users WHERE id = ?').get(userId)
 
     // Generate JWT token
     const token = generateToken({

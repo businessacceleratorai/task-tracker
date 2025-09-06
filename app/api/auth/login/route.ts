@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import pool from '@/lib/db/connection'
+import db from '@/lib/db/sqlite-connection'
 import { verifyPassword, generateToken } from '@/lib/auth/utils'
 
 export async function POST(request: NextRequest) {
@@ -15,22 +15,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const result = await pool.query(
-      'SELECT id, email, password_hash, name, created_at FROM users WHERE email = $1',
-      [email.toLowerCase()]
-    )
+    const user = db.prepare('SELECT id, email, name, password_hash, created_at FROM users WHERE email = ?').get(email.toLowerCase())
 
-    if (result.rows.length === 0) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       )
     }
 
-    const user = result.rows[0]
-
     // Verify password
     const isValidPassword = await verifyPassword(password, user.password_hash)
+
     if (!isValidPassword) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -56,7 +52,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Set HTTP-only cookie for browser-based auth
-    response.cookies.set('token', token, {
+    response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

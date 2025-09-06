@@ -8,7 +8,14 @@ const pool = new Pool({
   password: process.env.PGPASSWORD,
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  // Force IPv4 connection to avoid IPv6 issues in serverless environments
+  options: '-c default_transaction_isolation=read_committed',
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
+  max: 10,
+  // Force IPv4 by using the connection string approach
+  connectionString: process.env.DATABASE_URL
 })
 
 export default pool
