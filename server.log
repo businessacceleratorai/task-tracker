@@ -12,3 +12,12 @@
 
  ✓ Starting...
  ✓ Ready in 2.1s
+ ⚠ Found a change in next.config.js. Restarting the server to apply the changes...
+   ▲ Next.js 15.5.2 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
+   - Experiments (use with caution):
+     ✓ appDir
+
+ ✓ Starting...
+ ✓ Ready in 1950ms
