@@ -29,7 +29,6 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "type-check": "tsc --noEmit",
-    "export": "next export",
     "db:migrate": "node lib/db/migrate.js"
   },
   "dependencies": {
