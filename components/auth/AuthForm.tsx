@@ -34,7 +34,7 @@ export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
     setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/.netlify/functions/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,7 +75,7 @@ export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch('/.netlify/functions/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
