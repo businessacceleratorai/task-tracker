@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db/sqlite-connection'
+import { memoryStore } from '@/lib/db/memory-store'
 import { verifyPassword, generateToken } from '@/lib/auth/utils'
 
 export async function POST(request: NextRequest) {
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const user = db.prepare('SELECT id, email, name, password_hash, created_at FROM users WHERE email = ?').get(email.toLowerCase())
+    const user = memoryStore.users.findByEmail(email)
 
     if (!user) {
       return NextResponse.json(

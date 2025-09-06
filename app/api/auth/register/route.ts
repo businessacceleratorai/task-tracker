@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import db from '@/lib/db/sqlite-connection'
+import { memoryStore } from '@/lib/db/memory-store'
 import { hashPassword, generateToken } from '@/lib/auth/utils'
 
 export async function POST(request: NextRequest) {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase())
+    const existingUser = memoryStore.users.findByEmail(email)
 
     if (existingUser) {
       return NextResponse.json(
@@ -33,16 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Hash password and create user
     const passwordHash = await hashPassword(password)
-    const insertUser = db.prepare(`
-      INSERT INTO users (email, password_hash, name) 
-      VALUES (?, ?, ?) 
-    `)
-    
-    const result = insertUser.run(email.toLowerCase(), passwordHash, name || null)
-    const userId = result.lastInsertRowid
-
-    // Get the created user
-    const user = db.prepare('SELECT id, email, name, created_at FROM users WHERE id = ?').get(userId)
+    const user = memoryStore.users.create(email, passwordHash, name)
 
     // Generate JWT token
     const token = generateToken({
